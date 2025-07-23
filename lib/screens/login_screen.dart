@@ -11,9 +11,18 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _fullNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _isSignUp = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _fullNameController.dispose();
+    super.dispose();
+  }
 
   Future<void> _authenticate() async {
     if (!_formKey.currentState!.validate()) return;
@@ -22,10 +31,25 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       if (_isSignUp) {
-        await supabase.auth.signUp(
+        // Sign up with email, password, and full name
+        final response = await supabase.auth.signUp(
           email: _emailController.text.trim(),
           password: _passwordController.text,
+          data: {
+            'full_name': _fullNameController.text.trim(),
+          },
         );
+        
+        // You can also create a profile record in a separate table if needed
+        if (response.user != null) {
+          // Optional: Create user profile in a separate profiles table
+          // await supabase.from('profiles').insert({
+          //   'id': response.user!.id,
+          //   'full_name': _fullNameController.text.trim(),
+          //   'email': _emailController.text.trim(),
+          // });
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Check your email for verification link')),
         );
@@ -53,6 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (kDebugMode) {
       _emailController.text = 'davidenabs@gmail.com';
       _passwordController.text = '123456';
+      _fullNameController.text = 'David Enabs';
     }
     print(dotenv.env['SUPABASE_URL'] ?? "No SUPABASE");
 
@@ -80,6 +105,32 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   SizedBox(height: 48),
+                  
+                  // Full Name Field (only shown during sign up)
+                  if (_isSignUp) ...[
+                    TextFormField(
+                      controller: _fullNameController,
+                      decoration: InputDecoration(
+                        labelText: 'Full Name',
+                        prefixIcon: Icon(Icons.person),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter your full name';
+                        }
+                        if (value.trim().length < 2) {
+                          return 'Full name must be at least 2 characters';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 16),
+                  ],
+                  
+                  // Email Field
                   TextFormField(
                     controller: _emailController,
                     decoration: InputDecoration(
@@ -100,6 +151,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                   SizedBox(height: 16),
+                  
+                  // Password Field
                   TextFormField(
                     controller: _passwordController,
                     decoration: InputDecoration(
@@ -121,6 +174,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                   SizedBox(height: 24),
+                  
+                  // Submit Button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -136,12 +191,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: _isLoading
                           ? CircularProgressIndicator(color: Colors.white)
                           : Text(_isSignUp ? 'Sign Up' : 'Login'),
-                      // style: ElevatedButton.styleFrom(
-                      //   padding: EdgeInsets.symmetric(vertical: 16),
-                      // ),
                     ),
                   ),
                   SizedBox(height: 16),
+                  
+                  // Toggle Sign Up/Login
                   TextButton(
                     style: TextButton.styleFrom(
                       foregroundColor: Theme.of(context).primaryColor,

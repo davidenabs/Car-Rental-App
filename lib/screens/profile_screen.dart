@@ -43,9 +43,14 @@ class ProfileScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              user?.email ?? 'User',
+                              user?.userMetadata?['full_name'] ?? 'User',
                               style: Theme.of(context).textTheme.titleMedium
                                   ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              user?.email ?? 'User',
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             SizedBox(height: 4),
                             Text(
@@ -67,19 +72,19 @@ class ProfileScreen extends StatelessWidget {
               elevation: 0,
               child: Column(
                 children: [
-                  ListTile(
-                    leading: Icon(Icons.person_outline),
-                    title: Text('Edit Profile'),
-                    trailing: Icon(Icons.arrow_forward_ios),
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Edit profile feature coming soon!'),
-                        ),
-                      );
-                    },
-                  ),
-                  Divider(height: 1),
+                  // ListTile(
+                  //   leading: Icon(Icons.person_outline),
+                  //   title: Text('Edit Profile'),
+                  //   trailing: Icon(Icons.arrow_forward_ios),
+                  //   onTap: () {
+                  //     ScaffoldMessenger.of(context).showSnackBar(
+                  //       SnackBar(
+                  //         content: Text('Edit profile feature coming soon!'),
+                  //       ),
+                  //     );
+                  //   },
+                  // ),
+                  // Divider(height: 1),
                   ListTile(
                     leading: Icon(Icons.history),
                     title: Text('Booking History'),
@@ -93,19 +98,19 @@ class ProfileScreen extends StatelessWidget {
                       );
                     },
                   ),
-                  Divider(height: 1),
-                  ListTile(
-                    leading: Icon(Icons.payment),
-                    title: Text('Payment Methods'),
-                    trailing: Icon(Icons.arrow_forward_ios),
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Payment methods feature coming soon!'),
-                        ),
-                      );
-                    },
-                  ),
+                  // Divider(height: 1),
+                  // ListTile(
+                  //   leading: Icon(Icons.payment),
+                  //   title: Text('Payment Methods'),
+                  //   trailing: Icon(Icons.arrow_forward_ios),
+                  //   onTap: () {
+                  //     ScaffoldMessenger.of(context).showSnackBar(
+                  //       SnackBar(
+                  //         content: Text('Payment methods feature coming soon!'),
+                  //       ),
+                  //     );
+                  //   },
+                  // ),
                   Divider(height: 1),
                   ListTile(
                     leading: Icon(Icons.settings),
