@@ -1,4 +1,5 @@
 import 'package:car_rental_app/main.dart';
+import 'package:car_rental_app/widgets/booking_card.dart';
 import 'package:flutter/material.dart';
 
 class BookingsScreen extends StatefulWidget {
@@ -20,7 +21,10 @@ class _BookingsScreenState extends State<BookingsScreen> {
     try {
       final response = await supabase
           .from('bookings')
-          .select('*, vehicles(*)')
+          .select('''
+            *,
+            vehicles (*)
+          ''')
           .eq('user_id', supabase.auth.currentUser!.id)
           .order('created_at', ascending: false);
 
@@ -33,6 +37,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
         SnackBar(content: Text('Failed to load bookings: $error')),
       );
       setState(() => _isLoading = false);
+      print('Error loading bookings: $error');
     }
   }
 
@@ -61,83 +66,83 @@ class _BookingsScreenState extends State<BookingsScreen> {
   }
 }
 
-class BookingCard extends StatelessWidget {
-  final Map<String, dynamic> booking;
-  final Map<String, dynamic> vehicle;
+// class BookingCard extends StatelessWidget {
+//   final Map<String, dynamic> booking;
+//   final Map<String, dynamic> vehicle;
 
-  BookingCard({required this.booking, required this.vehicle});
+//   BookingCard({required this.booking, required this.vehicle});
 
-  @override
-  Widget build(BuildContext context) {
-    final startDate = DateTime.parse(booking['start_date']);
-    final endDate = DateTime.parse(booking['end_date']);
+//   @override
+//   Widget build(BuildContext context) {
+//     final startDate = DateTime.parse(booking['start_date']);
+//     final endDate = DateTime.parse(booking['end_date']);
 
-    return Card(
-      color: Colors.white,
-      elevation: 0,
-      margin: EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${vehicle['brand']} ${vehicle['model']}',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(booking['status']),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    booking['status'].toString().toUpperCase(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Text(
-              '${startDate.day}/${startDate.month}/${startDate.year} - ${endDate.day}/${endDate.month}/${endDate.year}',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Total: ₦${booking['total_cost']}',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context).primaryColor,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+//     return Card(
+//       color: Colors.white,
+//       elevation: 0,
+//       margin: EdgeInsets.only(bottom: 16),
+//       child: Padding(
+//         padding: EdgeInsets.all(16),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 Text(
+//                   '${vehicle['brand']} ${vehicle['model']}',
+//                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                 ),
+//                 Container(
+//                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+//                   decoration: BoxDecoration(
+//                     color: _getStatusColor(booking['status']),
+//                     borderRadius: BorderRadius.circular(12),
+//                   ),
+//                   child: Text(
+//                     booking['status'].toString().toUpperCase(),
+//                     style: TextStyle(
+//                       color: Colors.white,
+//                       fontSize: 12,
+//                       fontWeight: FontWeight.bold,
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             SizedBox(height: 8),
+//             Text(
+//               '${startDate.day}/${startDate.month}/${startDate.year} - ${endDate.day}/${endDate.month}/${endDate.year}',
+//               style: Theme.of(
+//                 context,
+//               ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+//             ),
+//             SizedBox(height: 8),
+//             Text(
+//               'Total: ₦${booking['total_cost']}',
+//               style: Theme.of(context).textTheme.titleMedium?.copyWith(
+//                 color: Theme.of(context).primaryColor,
+//                 fontWeight: FontWeight.bold,
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
 
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'confirmed':
-        return Colors.green;
-      case 'pending':
-        return Colors.orange;
-      case 'cancelled':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-}
+//   Color _getStatusColor(String status) {
+//     switch (status.toLowerCase()) {
+//       case 'confirmed':
+//         return Colors.green;
+//       case 'pending':
+//         return Colors.orange;
+//       case 'cancelled':
+//         return Colors.red;
+//       default:
+//         return Colors.grey;
+//     }
+//   }
+// }
